@@ -87,6 +87,7 @@
     php71Packages.phpcs
     php71Packages.composer
     jetbrains.datagrip
+    vscode
   ];
 
   nixpkgs.config.allowUnfree = true;
