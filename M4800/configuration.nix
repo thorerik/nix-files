@@ -88,6 +88,11 @@
     php71Packages.composer
     jetbrains.datagrip
     vscode
+    virtmanager-qt
+    virtmanager
+    virtviewer
+    libosinfo
+    htop
   ];
 
   nixpkgs.config.allowUnfree = true;
@@ -136,9 +141,10 @@
     isNormalUser = true;
     home = "/home/thor";
     uid = 1000;
-    extraGroups = [ "wheel" "networkmanager" "docker" "fuse" "vboxusers" ];
+    extraGroups = [ "wheel" "networkmanager" "docker" "fuse" "vboxusers" "libvirtd" ];
   };
 
+  virtualisation.libvirtd.enable = true;
   virtualisation.docker.enable = true;
   #virtualisation.virtualbox.host.enable = true;
   #nixpkgs.config.virtualbox.enableExtensionPack = true;
