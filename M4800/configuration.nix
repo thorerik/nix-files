@@ -76,8 +76,10 @@
     noto-fonts-emoji
     steam
     aspell
+    neovim
     python3
     python36Packages.pip
+    python36Packages.neovim
     remmina
     jetbrains.phpstorm
     php
