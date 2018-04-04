@@ -41,8 +41,11 @@
   '';
 
   networking.wireless.enable = false;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true;
+  networking.networkmanager.enable = true; # We're using NetworkManager instead, it'll handle wpa_supplicant for us
   networking.networkmanager.useDnsmasq = true;
+  services.dnsmasq.extraConfig = ''
+    local=/docker/127.0.0.2
+  '';
 
   # Select internationalisation properties.
   i18n = {
@@ -76,6 +79,7 @@
     noto-fonts-emoji
     steam
     aspell
+    aspellDicts.en
     neovim
     python3
     python36Packages.pip
@@ -87,12 +91,23 @@
     php71Packages.phpcs
     php71Packages.composer
     jetbrains.datagrip
+    gitkraken
     vscode
     virtmanager-qt
     virtmanager
     virtviewer
+    spice
+    #spice-gtk
+    #spice-protocol
     libosinfo
     htop
+    neofetch
+    mixxx
+    
+    binutils
+    file
+    pciutils
+    glxinfo
   ];
 
   nixpkgs.config.allowUnfree = true;
@@ -112,7 +127,7 @@
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-  networking.firewall.enable = false;
+  networking.firewall.enable = true;
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -123,7 +138,8 @@
     xkbOptions = "ctrl:nocaps";
     layout = "no";
 
-    videoDrivers = [ "intel" "vesa" ];
+    #videoDrivers = [ "intel" "vesa" ];
+    videoDrivers = [ "nvidia" ];
 
   };
   # services.xserver.xkbOptions = "eurosign:e";
@@ -134,6 +150,7 @@
 
   # Enable the KDE Desktop Environment.
   services.xserver.displayManager.sddm.enable = true;
+  services.xserver.displayManager.sddm.autoNumlock = true;
   services.xserver.desktopManager.plasma5.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -149,8 +166,9 @@
   #virtualisation.virtualbox.host.enable = true;
   #nixpkgs.config.virtualbox.enableExtensionPack = true;
 
-  hardware.bumblebee.enable = true;
+  hardware.bumblebee.enable = false;
   hardware.bumblebee.connectDisplay = true;
+  hardware.bumblebee.pmMethod = "bbswitch";
 
   users.defaultUserShell = "/run/current-system/sw/bin/zsh";
   programs.zsh.enable = true;
