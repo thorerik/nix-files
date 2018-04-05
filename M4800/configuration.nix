@@ -50,8 +50,11 @@
   # Select internationalisation properties.
   i18n = {
     consoleFont = "Lat2-Terminus16";
-    #consoleKeyMap = "en";
+    consoleKeyMap = "us";
     defaultLocale = "en_US.UTF-8";
+    inputMethod = {
+      enabled = "ibus";
+    };
   };
 
   # Set your time zone.
@@ -77,6 +80,7 @@
     openssl
     noto-fonts
     noto-fonts-emoji
+    emojione
     steam
     aspell
     aspellDicts.en
@@ -108,6 +112,10 @@
     file
     pciutils
     glxinfo
+
+    #libsForQt5.qtstyleplugin-kvantum 
+    arc-icon-theme
+    kate
   ];
 
   nixpkgs.config.allowUnfree = true;
@@ -135,7 +143,7 @@
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
-    xkbOptions = "ctrl:nocaps";
+    #xkbOptions = "ctrl:nocaps";
     layout = "no";
 
     #videoDrivers = [ "intel" "vesa" ];
@@ -166,6 +174,8 @@
   #virtualisation.virtualbox.host.enable = true;
   #nixpkgs.config.virtualbox.enableExtensionPack = true;
 
+  hardware.bluetooth.enable = true;
+
   hardware.bumblebee.enable = false;
   hardware.bumblebee.connectDisplay = true;
   hardware.bumblebee.pmMethod = "bbswitch";
@@ -177,6 +187,6 @@
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
   # should.
-  system.stateVersion = "17.09"; # Did you read the comment?
+  system.stateVersion = "18.03"; # Did you read the comment?
 
 }
