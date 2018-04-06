@@ -72,6 +72,9 @@
 
     printing.enable = true;
 
+    journald.extraConfig = ''
+      Storage="presistent"
+    '';
     dnsmasq.extraConfig = ''
       local=/docker/127.0.0.2
     '';
@@ -148,6 +151,9 @@
     kate
 
     microcodeIntel
+
+    terraform
+    vagrant
   ];
 
   nixpkgs.config.allowUnfree = true;
