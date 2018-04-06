@@ -146,9 +146,12 @@
     #libsForQt5.qtstyleplugin-kvantum 
     arc-icon-theme
     kate
+
+    microcodeIntel
   ];
 
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.virtualbox.enableExtensionPack = true;
 
   programs = {
     bash.enableCompletion = true;
@@ -158,6 +161,7 @@
   virtualisation = {
     libvirtd.enable = true;
     docker.enable = true;
+    virtualbox.host.enable = true;
   };
 
   fonts.enableCoreFonts = true;
