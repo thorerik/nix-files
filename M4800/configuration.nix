@@ -155,7 +155,7 @@
     zsh.enable = true;
   };
 
-  virtualization = {
+  virtualisation = {
     libvirtd.enable = true;
     docker.enable = true;
   };
