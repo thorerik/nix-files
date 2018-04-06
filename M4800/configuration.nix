@@ -8,23 +8,24 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      # Include secrets I don't want to share with the world
+      ./secrets.nix
     ];
 
-  boot.loader.systemd-boot.enable = true;
-  #boot.loader.grub.enable = false;
-  #boot.loader.grub.version = 2;
-  #boot.loader.grub.device = "nodev";
-  #boot.loader.grub.efiSupport = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  boot.initrd.luks.devices = [
-    {
-      name = "root";
-      device = "/dev/disk/by-uuid/b9af358e-410d-477f-8b4c-174de163700d";
-      preLVM = true;
-      allowDiscards = true;
-    }
-  ];
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+    initrd.luks.devices = [
+      {
+        name = "root";
+        device = "/dev/disk/by-uuid/b9af358e-410d-477f-8b4c-174de163700d";
+        preLVM = true;
+        allowDiscards = true;
+      }
+    ];
+  };
 
   fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
 
@@ -32,20 +33,49 @@
     opengl.driSupport32Bit = true;
     pulseaudio.enable = true;
     pulseaudio.support32Bit = true;
-    #nvidiaOptimus.disable = true;
+    bluetooth.enable = true;
   };
 
-  networking.hostName = "thor-nixos"; # Define your hostname.
-  networking.extraHosts = ''
-    127.0.0.1 thor-nixos
-  '';
+  networking = {
+    hostName = "thor-nixos"; # Define your hostname.
+    extraHosts = ''
+      127.0.0.1 thor-nixos
+    '';
 
-  networking.wireless.enable = false;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true; # We're using NetworkManager instead, it'll handle wpa_supplicant for us
-  networking.networkmanager.useDnsmasq = true;
-  services.dnsmasq.extraConfig = ''
-    local=/docker/127.0.0.2
-  '';
+    wireless.enable = false;  # Enables wireless support via wpa_supplicant.
+    networkmanager.enable = true; # We're using NetworkManager instead, it'll handle wpa_supplicant for us
+    networkmanager.useDnsmasq = true;
+    firewall.enable = true;
+  };
+
+  services = {
+    xserver = {
+      enable = true;
+      layout = "no";
+      videoDrivers = [ "nvidia" ];
+      
+      # Touchpad
+      libinput.enable = true;
+
+      # KDE
+      displayManager.sddm.enable = true;
+      displayManager.sddm.autoNumlock = true;
+      desktopManager.plasma5.enable = true;
+    };
+
+    mopidy = {
+      enable = true;
+      extensionPackages = with pkgs; [
+        mopidy-spotify
+      ];
+    };
+
+    printing.enable = true;
+
+    dnsmasq.extraConfig = ''
+      local=/docker/127.0.0.2
+    '';
+  };
 
   # Select internationalisation properties.
   i18n = {
@@ -120,68 +150,27 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  programs.bash.enableCompletion = true;
-  programs.mtr.enable = true;
-  # programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  networking.firewall.enable = true;
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
-  # Enable the X11 windowing system.
-  services.xserver = {
-    enable = true;
-    #xkbOptions = "ctrl:nocaps";
-    layout = "no";
-
-    #videoDrivers = [ "intel" "vesa" ];
-    videoDrivers = [ "nvidia" ];
-
+  programs = {
+    bash.enableCompletion = true;
+    zsh.enable = true;
   };
-  # services.xserver.xkbOptions = "eurosign:e";
+
+  virtualization = {
+    libvirtd.enable = true;
+    docker.enable = true;
+  };
 
   fonts.enableCoreFonts = true;
-  # Enable touchpad support.
-  services.xserver.libinput.enable = true;
 
-  # Enable the KDE Desktop Environment.
-  services.xserver.displayManager.sddm.enable = true;
-  services.xserver.displayManager.sddm.autoNumlock = true;
-  services.xserver.desktopManager.plasma5.enable = true;
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.extraUsers.thor = {
-    isNormalUser = true;
-    home = "/home/thor";
-    uid = 1000;
-    extraGroups = [ "wheel" "networkmanager" "docker" "fuse" "vboxusers" "libvirtd" ];
+  users = {
+    extraUsers.thor = {
+      isNormalUser = true;
+      home = "/home/thor";
+      uid = 1000;
+      extraGroups = [ "wheel" "networkmanager" "docker" "fuse" "vboxusers" "libvirtd" "audio" ];
+    };
+    defaultUserShell = "/run/current-system/sw/bin/zsh";
   };
-
-  virtualisation.libvirtd.enable = true;
-  virtualisation.docker.enable = true;
-  #virtualisation.virtualbox.host.enable = true;
-  #nixpkgs.config.virtualbox.enableExtensionPack = true;
-
-  hardware.bluetooth.enable = true;
-
-  hardware.bumblebee.enable = false;
-  hardware.bumblebee.connectDisplay = true;
-  hardware.bumblebee.pmMethod = "bbswitch";
-
-  users.defaultUserShell = "/run/current-system/sw/bin/zsh";
-  programs.zsh.enable = true;
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
