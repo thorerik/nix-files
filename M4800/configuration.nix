@@ -44,7 +44,7 @@
 
     wireless.enable = false;  # Enables wireless support via wpa_supplicant.
     networkmanager.enable = true; # We're using NetworkManager instead, it'll handle wpa_supplicant for us
-    networkmanager.useDnsmasq = true;
+    networkmanager.useDnsmasq = false;
     firewall.enable = true;
   };
 
@@ -73,11 +73,22 @@
     printing.enable = true;
 
     journald.extraConfig = ''
-      Storage="presistent"
+      Storage=persistent
     '';
-    dnsmasq.extraConfig = ''
-      local=/docker/127.0.0.2
-    '';
+    dnsmasq = {
+      enable = true;
+      servers = [
+        "1.1.1.1"
+        "1.0.0.1"
+        "9.9.9.9"
+      ];
+      extraConfig = ''
+        bind-interfaces
+        listen-address=127.0.0.1
+        local=/docker/127.0.0.2
+        address=/test/192.168.10.10
+      '';
+    };
   };
 
   # Select internationalisation properties.
