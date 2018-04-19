@@ -1,7 +1,6 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
 { config, pkgs, ... }:
 
 {
@@ -34,25 +33,59 @@
     pulseaudio.enable = true;
     pulseaudio.support32Bit = true;
     bluetooth.enable = true;
+    cpu.intel.updateMicrocode = true;
   };
 
   networking = {
     hostName = "thor-nixos"; # Define your hostname.
+    hostId = "b42b595e"; # cksum /etc/machine-id | while read c rest; do printf "%x" $c; done
     extraHosts = ''
       127.0.0.1 thor-nixos
     '';
 
-    wireless.enable = false;  # Enables wireless support via wpa_supplicant.
-    networkmanager.enable = true; # We're using NetworkManager instead, it'll handle wpa_supplicant for us
-    networkmanager.useDnsmasq = false;
+    networkmanager.enable = true;
     firewall.enable = true;
   };
 
   services = {
+    haveged.enable = true;
+    thermald.enable = true;
+
+    acpid.enable = true;
+
+    ntp.enable = false; # NTP is handled by chrony
+
+    chrony = {
+      enable = true;
+      servers = ["0.no.pool.ntp.org" "1.no.pool.ntp.org"];
+    };
+
+    nscd.enable = false;
+
+    udisks2.enable = true;
+
+    dbus.packages = [ pkgs.gnome3.gconf ];
+
+    redshift = {
+      enable = true;
+      latitude = "59";
+      longitude = "10";
+      brightness = {
+        day = "1.0";
+        night = "0.7";
+      };
+      temperature = {
+        day = 5700;
+        night = 3500;
+      };
+    };
+
     xserver = {
       enable = true;
       layout = "no";
       videoDrivers = [ "nvidia" ];
+
+      startDbusSession = true;
       
       # Touchpad
       libinput.enable = true;
@@ -61,6 +94,7 @@
       displayManager.sddm.enable = true;
       displayManager.sddm.autoNumlock = true;
       desktopManager.plasma5.enable = true;
+      desktopManager.enlightenment.enable = false;
     };
 
     mopidy = {
@@ -68,6 +102,11 @@
       extensionPackages = with pkgs; [
         mopidy-spotify
       ];
+    };
+
+    locate = {
+      enable = true;
+      interval = "11:10";
     };
 
     printing.enable = true;
@@ -78,6 +117,8 @@
     dnsmasq = {
       enable = true;
       servers = [
+        "81.93.173.118"
+        "81.93.173.117"
         "1.1.1.1"
         "1.0.0.1"
         "9.9.9.9"
@@ -107,68 +148,95 @@
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
   environment.systemPackages = with pkgs; [
+    # basic system
     wget
     vim
-    sudo
     tmux
     git
-    weechat
-    spotify
-    gist
-    firefox
-    google-chrome
-    opera
-    discord
-    slack
-    openconnect
-    openssl
-    noto-fonts
-    noto-fonts-emoji
-    emojione
-    steam
-    aspell
-    aspellDicts.en
+    unzip
+    pwgen
+    httpie
     neovim
     python3
     python36Packages.pip
     python36Packages.neovim
+    terminator
+    patchelf
+    htop
+    gnome3.dconf
+    binutils
+    file
+    pciutils
+    glxinfo
+    microcodeIntel
+
+    # browsers
+    firefox
+    google-chrome
+    opera
+
+    # entertainment
+    spotify
+    steam
+    minecraft
+    neofetch
+    mixxx
+
+    # utils
+    gist
+    aspell
+    aspellDicts.en
     remmina
+    
+    # communication
+    discord
+    slack
+
+    # vpn
+    openconnect
+    openssl
+    
+    # php development
     jetbrains.phpstorm
     php
     php71Packages.phpcbf
     php71Packages.phpcs
     php71Packages.composer
+
+    # dba
     jetbrains.datagrip
+
+    # java/scala
+    jetbrains.idea-ultimate
+    sbt
+
+    # misc development tools
     gitkraken
     vscode
+    kate
+    terraform
+    vagrant
+
+    # vm
     virtmanager-qt
     virtmanager
     virtviewer
     spice
-    #spice-gtk
-    #spice-protocol
     libosinfo
-    htop
-    neofetch
-    mixxx
     
-    binutils
-    file
-    pciutils
-    glxinfo
-
-    #libsForQt5.qtstyleplugin-kvantum 
+    # pretty
+    libsForQt5.qtstyleplugin-kvantum 
     arc-icon-theme
-    kate
-
-    microcodeIntel
-
-    terraform
-    vagrant
   ];
 
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.virtualbox.enableExtensionPack = true;
+  security.sudo.enable = true;
+  security.sudo.wheelNeedsPassword = false;
+
+  nixpkgs.config = {
+    allowUnfree = true;
+    allowUnfreeRedistributable = true;
+    virtualbox.enableExtensionPack = true;
+  };
 
   programs = {
     bash.enableCompletion = true;
@@ -181,7 +249,18 @@
     virtualbox.host.enable = true;
   };
 
-  fonts.enableCoreFonts = true;
+  fonts = {
+    enableCoreFonts = true;
+    enableDefaultFonts = true;
+    fonts = with pkgs; [
+      noto-fonts
+      noto-fonts-emoji
+      emojione
+      fira-code
+      fira-code-symbols
+      dejavu_fonts
+    ];
+  };
 
   users = {
     extraUsers.thor = {
