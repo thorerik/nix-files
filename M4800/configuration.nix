@@ -26,7 +26,12 @@
     ];
   };
 
-  fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
+  fileSystems = {
+    "/" = {
+      options = [ "noatime" "nodiratime" "discard" ];
+    };
+  };
+
 
   hardware = {
     opengl.driSupport32Bit = true;
@@ -42,7 +47,9 @@
     extraHosts = ''
       127.0.0.1 thor-nixos
     '';
-
+    search = [
+      # searchpaths
+    ];
     networkmanager.enable = true;
     firewall.enable = true;
   };
@@ -94,14 +101,22 @@
       displayManager.sddm.enable = true;
       displayManager.sddm.autoNumlock = true;
       desktopManager.plasma5.enable = true;
-      desktopManager.enlightenment.enable = false;
     };
 
     mopidy = {
-      enable = true;
+      enable = false;
       extensionPackages = with pkgs; [
-        mopidy-spotify
+        mopidy-spotify # broken due to spotify :<
       ];
+    };
+
+    clamav = {
+      daemon = {
+        enable = true;
+      };
+      updater = {
+        enable = true;
+      };
     };
 
     locate = {
@@ -117,8 +132,6 @@
     dnsmasq = {
       enable = true;
       servers = [
-        "81.93.173.118"
-        "81.93.173.117"
         "1.1.1.1"
         "1.0.0.1"
         "9.9.9.9"
@@ -181,15 +194,20 @@
     minecraft
     neofetch
     mixxx
+    clementine
 
     # utils
     gist
     aspell
     aspellDicts.en
     remmina
-    
+    inkscape
+    darktable
+    cifs-utils
+    kitty
+    hyper
+
     # communication
-    discord
     slack
 
     # vpn
@@ -212,10 +230,20 @@
 
     # misc development tools
     gitkraken
-    vscode
     kate
     terraform
     vagrant
+    vscode
+    ## Vscode deps
+    libunwind
+    lttng-ust
+    openssl
+    libuuid
+    kerberos
+    icu
+    zlib
+    libsecret
+    desktop-file-utils
 
     # vm
     virtmanager-qt
@@ -229,8 +257,19 @@
     arc-icon-theme
   ];
 
-  security.sudo.enable = true;
-  security.sudo.wheelNeedsPassword = false;
+  security = {
+    sudo = {
+      enable = true;
+      wheelNeedsPassword = false;
+    };
+  };
+
+  nix = {
+    gc = {
+      automatic = true;
+      dates = "03:15";
+    };
+  };
 
   nixpkgs.config = {
     allowUnfree = true;
