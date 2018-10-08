@@ -1,9 +1,16 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   services = {
     haveged.enable = true;
     thermald.enable = true;
+
+    flatpak = { 
+      enable = true;
+      extraPortals = with pkgs; [
+        xdg-desktop-portal-kde
+      ];
+    };
 
     acpid.enable = true;
 
@@ -18,7 +25,7 @@
 
     udisks2.enable = true;
 
-    dbus.packages = [ pkgs.gnome3.gconf ];
+    dbus.packages = [ ];
 
     redshift = {
       enable = true;
@@ -112,6 +119,12 @@
   programs = {
     bash.enableCompletion = true;
     zsh.enable = true;
+    firejail = {
+      enable = true;
+      wrappedBinaries = {
+        firefox = "${lib.getBin pkgs.firefox}/bin/firefox";
+      };
+    };
   };
 
   virtualisation = {
@@ -131,11 +144,11 @@
     ];
   };
   system = {
-    stateVersion = "18.03"; # Did you read the comment?
+    stateVersion = "18.09";
     autoUpgrade = {
       enable = true;
       dates = "02:00";
-      channel = "https://nixos.org/channels/nixos-18.03";
+      channel = "https://nixos.org/channels/nixos-18.09";
     };
   };
 }

@@ -20,5 +20,6 @@
         file
         pciutils
         glxinfo
+        bat
     ];
 }

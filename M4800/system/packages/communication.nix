@@ -1,7 +1,8 @@
 { config, pkgs, ... }:
 {
     environment.systemPackages = with pkgs; [
-        slack
-        discord
+        ## Both disabled since they are now obtained as flatpaks
+        # slack
+        # discord
     ];
 }

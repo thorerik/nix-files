@@ -1,11 +1,11 @@
 { config, pkgs, ... }:
 {
     environment.systemPackages = with pkgs; [
-        spotify
+        # spotify # Obtained as flatpak
         steam
         minecraft
         neofetch
         mixxx
-        clementine
+        clementineUnfree
     ];
 }
