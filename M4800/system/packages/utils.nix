@@ -14,5 +14,8 @@
         terraform
         vagrant
         vscode
+        pwgen
+        neofetch
+        sddm-kcm
     ];
 }

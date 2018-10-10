@@ -34,8 +34,14 @@
 
   hardware = {
     opengl.driSupport32Bit = true;
-    pulseaudio.enable = true;
-    pulseaudio.support32Bit = true;
+    pulseaudio = {
+      enable = true;
+      support32Bit = true;
+      extraConfig = ''
+        load-module module-equalizer-sink
+        load-module module-dbus-protocol
+      '';
+    };
     bluetooth.enable = true;
     cpu.intel.updateMicrocode = true;
   };

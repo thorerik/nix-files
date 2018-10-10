@@ -21,5 +21,8 @@
         pciutils
         glxinfo
         bat
+        lsof
+        file
+        lm_sensors
     ];
 }

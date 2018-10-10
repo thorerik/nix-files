@@ -52,8 +52,12 @@
       libinput.enable = true;
 
       # KDE
-      displayManager.sddm.enable = true;
-      displayManager.sddm.autoNumlock = true;
+      displayManager.sddm = {
+        enable = true;
+        autoNumlock = true;
+        #theme = "plasma-chili";
+      };
+      
       desktopManager.plasma5.enable = true;
     };
 
